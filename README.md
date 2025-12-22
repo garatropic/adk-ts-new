@@ -1,18 +1,114 @@
-# AdkTsNew
+# create-adk-agent
 
 <a alt="Nx logo" href="https://nx.dev" target="_blank" rel="noreferrer"><img src="https://raw.githubusercontent.com/nrwl/nx/master/images/nx-logo.png" width="45"></a>
 
-✨ Your new, shiny [Nx workspace](https://nx.dev) is ready ✨.
+> **Scaffold Google ADK TypeScript projects in seconds**
 
-[Learn more about this workspace setup and its capabilities](https://nx.dev/nx-api/js?utm_source=nx_project&amp;utm_medium=readme&amp;utm_campaign=nx_projects) or run `npx nx graph` to visually explore what was created. Now, let's get you up to speed!
+This Nx workspace contains `create-adk-agent` - a generator that makes it incredibly easy to start building AI agents with [Google's Agent Development Kit (ADK)](https://google.github.io/adk-docs/).
 
-## Generate a library
+## 📦 Package: create-adk-agent
 
-```sh
-npx nx g @nx/js:lib packages/pkg1 --publishable --importPath=@my-org/pkg1
+**Stop wasting time on setup. Start building agents.**
+
+`create-adk-agent` generates production-ready ADK TypeScript projects with everything configured:
+
+- 🤖 **5 Agent Templates** - Working examples from [official ADK docs](https://google.github.io/adk-docs/)
+- 🔌 **Multi-Model Ready** - Pre-configured for Gemini, OpenAI, Anthropic
+- ⚡ **Hot Reload** - Instant TypeScript execution with tsx
+- 🔐 **Security Built-in** - Proper `.env` handling
+- 🧪 **Testing Ready** - Jest configured
+
+### Quick Start
+
+```bash
+npx create-adk-agent my-agent
 ```
 
-## Run tasks
+That's it! You get a fully configured ADK project ready for development.
+
+[📚 Full Documentation →](./packages/create-adk-agent/README.md) | [🚀 ADK Docs →](https://google.github.io/adk-docs/)
+
+---
+
+## 🛠️ Development
+
+### Setup
+
+```sh
+pnpm install
+```
+
+### Build the Generator
+
+```sh
+nx build create-adk-agent
+```
+
+### Test Locally
+
+```sh
+# Generate a test project
+nx g @adk-ts-new/create-adk-agent:init test-project
+
+# Test with different options
+nx g @adk-ts-new/create-adk-agent:init my-agent \
+  --templates=team,workflow \
+  --modelProvider=openai \
+  --model=gpt-5 \
+  --no-interactive
+```
+
+### Run Tests
+
+```sh
+nx test create-adk-agent
+```
+
+## 📤 Publishing
+
+```sh
+# Dry run to verify package contents
+cd packages/create-adk-agent
+npm run publish:dry-run
+
+# Publish to npm
+npm run publish:npm
+```
+
+## 📁 Project Structure
+
+```
+adk-ts-new/
+├── packages/
+│   └── create-adk-agent/      # Main generator package
+│       ├── src/
+│       │   └── generators/
+│       │       └── init/
+│       │           ├── files/         # Template files
+│       │           ├── generator.ts   # Generator logic
+│       │           └── schema.json    # CLI options
+│       ├── generators.json    # Generator registration
+│       ├── package.json       # Package metadata
+│       └── README.md          # Package documentation
+├── IMPLEMENTATION_PLAN.md     # Detailed implementation plan
+└── README.md                  # This file
+```
+
+## 🤝 Contributing
+
+Contributions welcome! Please see [IMPLEMENTATION_PLAN.md](./IMPLEMENTATION_PLAN.md) for architecture details.
+
+## 📄 License
+
+MIT © Maina Wycliffe
+
+---
+
+## Nx Workspace Documentation
+
+✨ This is an [Nx workspace](https://nx.dev). [Learn more about Nx &raquo;](https://nx.dev/nx-api/js?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+
+### Nx Commands
 
 To build the library use:
 
@@ -97,12 +193,13 @@ Nx Console is an editor extension that enriches your developer experience. It le
 
 Learn more:
 
-- [Learn more about this workspace setup](https://nx.dev/nx-api/js?utm_source=nx_project&amp;utm_medium=readme&amp;utm_campaign=nx_projects)
+- [Learn more about this workspace setup](https://nx.dev/nx-api/js?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
 - [Learn about Nx on CI](https://nx.dev/ci/intro/ci-with-nx?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
 - [Releasing Packages with Nx release](https://nx.dev/features/manage-releases?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
 - [What are Nx plugins?](https://nx.dev/concepts/nx-plugins?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
 
 And join the Nx community:
+
 - [Discord](https://go.nx.dev/community)
 - [Follow us on X](https://twitter.com/nxdevtools) or [LinkedIn](https://www.linkedin.com/company/nrwl)
 - [Our Youtube channel](https://www.youtube.com/@nxdevtools)

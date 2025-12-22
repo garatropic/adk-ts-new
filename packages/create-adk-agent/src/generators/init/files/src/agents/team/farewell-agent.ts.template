@@ -1,0 +1,43 @@
+import { LlmAgent, FunctionTool } from '@google/adk';<% if (modelProvider === 'openai' || modelProvider === 'anthropic') { %>
+import { LiteLlm } from '@google/adk';<% } %>
+import { z } from 'zod';
+
+// Tool for saying goodbye
+const sayGoodbye = new FunctionTool({
+  name: 'say_goodbye',
+  description: 'Creates a personalized farewell message.',
+  parameters: z.object({
+    name: z.string().describe('The name of the person to bid farewell'),
+    language: z
+      .string()
+      .optional()
+      .describe('The language for the farewell (e.g., "english", "spanish", "french")'),
+  }),
+  execute: ({ name, language = 'english' }) => {
+    const farewells: Record<string, string> = {
+      english: `Goodbye ${name}! Have a great day!`,
+      spanish: `¡Adiós ${name}! ¡Que tengas un gran día!`,
+      french: `Au revoir ${name}! Bonne journée!`,
+      german: `Auf Wiedersehen ${name}! Schönen Tag noch!`,
+      italian: `Arrivederci ${name}! Buona giornata!`,
+    };
+    
+    const farewell = farewells[language.toLowerCase()] || farewells.english;
+    return {
+      status: 'success',
+      report: farewell,
+    };
+  },
+});
+
+// Farewell agent
+export const farewellAgent = new LlmAgent({
+  name: 'farewell_agent',
+  <% if (modelProvider === 'gemini') { %>model: '<%= model %>',<% } else if (modelProvider === 'openai' || modelProvider === 'anthropic') { %>model: new LiteLlm({ model: '<%= model %>' }),<% } else { %>model: '<%= model %>',<% } %>
+  description: 'Agent specialized in creating personalized farewells.',
+  instruction: `You are a friendly farewell specialist. When asked to say goodbye:
+1. Use the say_goodbye tool to create a personalized farewell
+2. If a language preference is mentioned, use that language
+3. Add a warm, positive message wishing them well`,
+  tools: [sayGoodbye],
+});

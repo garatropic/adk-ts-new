@@ -1,0 +1,77 @@
+{
+  "name": "create-adk-agent",
+  "version": "0.0.2",
+  "description": "Nx generator for scaffolding ADK (Agent Development Kit) TypeScript projects with multiple templates, multi-model support, and modern tooling",
+  "keywords": [
+    "adk",
+    "agent",
+    "ai",
+    "llm",
+    "gemini",
+    "openai",
+    "anthropic",
+    "typescript",
+    "nx",
+    "generator",
+    "scaffold",
+    "template"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mainawycliffe/adk-ts-new"
+  },
+  "author": "Maina Wycliffe",
+  "license": "MIT",
+  "type": "module",
+  "bin": {
+    "create-adk-agent": "./bin/create-adk-agent.js"
+  },
+  "scripts": {
+    "prepublishOnly": "nx build create-adk-agent",
+    "publish:dry-run": "npm publish --dry-run",
+    "publish:npm": "npm publish --access public"
+  },
+  "generators": "./generators.json",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    "./package.json": "./package.json",
+    ".": {
+      "@adk-ts-new/source": "./src/index.ts",
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "bin",
+    "generators.json",
+    "src/generators/**/files/**",
+    "src/generators/**/schema.json",
+    "!**/*.tsbuildinfo"
+  ],
+  "nx": {
+    "sourceRoot": "packages/create-adk-agent/src",
+    "targets": {
+      "build": {
+        "executor": "@nx/js:swc",
+        "outputs": [
+          "{options.outputPath}"
+        ],
+        "options": {
+          "outputPath": "packages/create-adk-agent/dist",
+          "main": "packages/create-adk-agent/src/index.ts",
+          "tsConfig": "packages/create-adk-agent/tsconfig.lib.json",
+          "skipTypeCheck": true,
+          "stripLeadingPaths": true
+        }
+      }
+    }
+  },
+  "dependencies": {
+    "@nx/devkit": "^22.3.3",
+    "@swc/helpers": "~0.5.11"
+  }
+}

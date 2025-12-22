@@ -1,0 +1,69 @@
+import { LlmAgent, FunctionTool } from '@google/adk';<% if (modelProvider === 'openai' || modelProvider === 'anthropic') { %>
+import { LiteLlm } from '@google/adk';<% } %>
+import { z } from 'zod';
+
+// Step 1: Data validation
+const validateInput = new FunctionTool({
+  name: 'validate_input',
+  description: 'Validates input data for processing.',
+  parameters: z.object({
+    input: z.string().describe('The input data to validate'),
+  }),
+  execute: ({ input }) => {
+    const isValid = input.length > 0 && input.length < 1000;
+    return {
+      status: isValid ? 'success' : 'error',
+      report: isValid
+        ? `Input is valid (${input.length} characters)`
+        : 'Input is invalid (too long or empty)',
+    };
+  },
+});
+
+// Step 2: Data transformation
+const transformData = new FunctionTool({
+  name: 'transform_data',
+  description: 'Transforms validated data.',
+  parameters: z.object({
+    data: z.string().describe('The data to transform'),
+  }),
+  execute: ({ data }) => {
+    const transformed = data.toUpperCase().split('').reverse().join('');
+    return {
+      status: 'success',
+      report: `Transformed: ${transformed}`,
+    };
+  },
+});
+
+// Step 3: Save result
+const saveResult = new FunctionTool({
+  name: 'save_result',
+  description: 'Saves the processed result.',
+  parameters: z.object({
+    result: z.string().describe('The result to save'),
+  }),
+  execute: ({ result }) => {
+    // In a real application, save to database or file
+    return {
+      status: 'success',
+      report: `Result saved: ${result}`,
+    };
+  },
+});
+
+// Workflow agent - demonstrates sequential processing
+export const rootAgent = new LlmAgent({
+  name: 'workflow_agent',
+  <% if (modelProvider === 'gemini') { %>model: '<%= model %>',<% } else if (modelProvider === 'openai' || modelProvider === 'anthropic') { %>model: new LiteLlm({ model: '<%= model %>' }),<% } else { %>model: '<%= model %>',<% } %>
+  description: 'An agent that demonstrates workflow patterns.',
+  instruction: `You are a workflow orchestration assistant. When given data to process:
+
+1. VALIDATE: First use validate_input to check if the input is valid
+2. TRANSFORM: If valid, use transform_data to process it
+3. SAVE: Finally use save_result to save the processed data
+
+Always follow this sequence. Report the status after each step.
+If validation fails, do not proceed to transformation.`,
+  tools: [validateInput, transformData, saveResult],
+});

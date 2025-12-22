@@ -1,0 +1,18 @@
+import { LlmAgent } from '@google/adk';<% if (modelProvider === 'openai' || modelProvider === 'anthropic') { %>
+import { LiteLlm } from '@google/adk';<% } %>
+import { greetingAgent } from './greeting-agent.js';
+import { farewellAgent } from './farewell-agent.js';
+
+// Root agent that coordinates between greeting and farewell agents
+export const rootAgent = new LlmAgent({
+  name: 'team_root_agent',
+  <% if (modelProvider === 'gemini') { %>model: '<%= model %>',<% } else if (modelProvider === 'openai' || modelProvider === 'anthropic') { %>model: new LiteLlm({ model: '<%= model %>' }),<% } else { %>model: '<%= model %>',<% } %>
+  description: 'Root agent that coordinates greeting and farewell tasks.',
+  instruction: `You are the coordinator of a team of agents. Your job is to delegate tasks:
+- For greetings, hellos, or welcome messages, delegate to the greeting_agent
+- For farewells, goodbyes, or departure messages, delegate to the farewell_agent
+- You can delegate to multiple agents if the user wants both a greeting and farewell
+
+Always provide a friendly introduction before delegating.`,
+  agents: [greetingAgent, farewellAgent],
+});

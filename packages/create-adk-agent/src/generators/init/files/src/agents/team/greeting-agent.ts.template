@@ -1,0 +1,43 @@
+import { LlmAgent, FunctionTool } from '@google/adk';<% if (modelProvider === 'openai' || modelProvider === 'anthropic') { %>
+import { LiteLlm } from '@google/adk';<% } %>
+import { z } from 'zod';
+
+// Tool for saying hello
+const sayHello = new FunctionTool({
+  name: 'say_hello',
+  description: 'Creates a personalized greeting message.',
+  parameters: z.object({
+    name: z.string().describe('The name of the person to greet'),
+    language: z
+      .string()
+      .optional()
+      .describe('The language for the greeting (e.g., "english", "spanish", "french")'),
+  }),
+  execute: ({ name, language = 'english' }) => {
+    const greetings: Record<string, string> = {
+      english: `Hello ${name}! Welcome!`,
+      spanish: `¡Hola ${name}! ¡Bienvenido!`,
+      french: `Bonjour ${name}! Bienvenue!`,
+      german: `Hallo ${name}! Willkommen!`,
+      italian: `Ciao ${name}! Benvenuto!`,
+    };
+    
+    const greeting = greetings[language.toLowerCase()] || greetings.english;
+    return {
+      status: 'success',
+      report: greeting,
+    };
+  },
+});
+
+// Greeting agent
+export const greetingAgent = new LlmAgent({
+  name: 'greeting_agent',
+  <% if (modelProvider === 'gemini') { %>model: '<%= model %>',<% } else if (modelProvider === 'openai' || modelProvider === 'anthropic') { %>model: new LiteLlm({ model: '<%= model %>' }),<% } else { %>model: '<%= model %>',<% } %>
+  description: 'Agent specialized in creating personalized greetings.',
+  instruction: `You are a friendly greeting specialist. When asked to greet someone:
+1. Use the say_hello tool to create a personalized greeting
+2. If a language preference is mentioned, use that language
+3. Add a warm, welcoming message after the greeting`,
+  tools: [sayHello],
+});

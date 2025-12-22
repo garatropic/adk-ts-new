@@ -1,0 +1,80 @@
+<% if (hasBasic) { %>import { rootAgent as basicAgent } from '../src/agents/basic/agent.js';
+
+describe('Basic Agent', () => {
+  it('should initialize with correct configuration', () => {
+    expect(basicAgent.name).toBe('hello_time_agent');
+    expect(basicAgent.tools).toHaveLength(1);
+    expect(basicAgent.tools[0].name).toBe('get_current_time');
+  });
+
+  it('should have correct description', () => {
+    expect(basicAgent.description).toContain('time');
+  });
+});
+<% } %>
+<% if (hasMultiTool) { %>import { rootAgent as multiToolAgent } from '../src/agents/multi-tool/agent.js';
+
+describe('Multi-Tool Agent', () => {
+  it('should initialize with correct configuration', () => {
+    expect(multiToolAgent.name).toBe('multi_tool_agent');
+    expect(multiToolAgent.tools).toHaveLength(3);
+  });
+
+  it('should have time, weather, and calculate tools', () => {
+    const toolNames = multiToolAgent.tools.map((tool) => tool.name);
+    expect(toolNames).toContain('get_current_time');
+    expect(toolNames).toContain('get_weather');
+    expect(toolNames).toContain('calculate');
+  });
+});
+<% } %>
+<% if (hasTeam) { %>import { rootAgent as teamAgent } from '../src/agents/team/root-agent.js';
+import { greetingAgent } from '../src/agents/team/greeting-agent.js';
+import { farewellAgent } from '../src/agents/team/farewell-agent.js';
+
+describe('Team Agents', () => {
+  it('root agent should coordinate sub-agents', () => {
+    expect(teamAgent.name).toBe('team_root_agent');
+    expect(teamAgent.agents).toHaveLength(2);
+  });
+
+  it('greeting agent should have say_hello tool', () => {
+    expect(greetingAgent.name).toBe('greeting_agent');
+    expect(greetingAgent.tools).toHaveLength(1);
+    expect(greetingAgent.tools[0].name).toBe('say_hello');
+  });
+
+  it('farewell agent should have say_goodbye tool', () => {
+    expect(farewellAgent.name).toBe('farewell_agent');
+    expect(farewellAgent.tools).toHaveLength(1);
+    expect(farewellAgent.tools[0].name).toBe('say_goodbye');
+  });
+});
+<% } %>
+<% if (hasStreaming) { %>import { rootAgent as streamingAgent } from '../src/agents/streaming/agent.js';
+
+describe('Streaming Agent', () => {
+  it('should initialize with correct configuration', () => {
+    expect(streamingAgent.name).toBe('streaming_agent');
+    expect(streamingAgent.tools).toHaveLength(1);
+  });
+
+  it('should have process_data tool', () => {
+    expect(streamingAgent.tools[0].name).toBe('process_data');
+  });
+});
+<% } %>
+<% if (hasWorkflow) { %>import { rootAgent as workflowAgent } from '../src/agents/workflow/agent.js';
+
+describe('Workflow Agent', () => {
+  it('should initialize with correct configuration', () => {
+    expect(workflowAgent.name).toBe('workflow_agent');
+    expect(workflowAgent.tools).toHaveLength(3);
+  });
+
+  it('should have workflow tools in correct order', () => {
+    const toolNames = workflowAgent.tools.map((tool) => tool.name);
+    expect(toolNames).toEqual(['validate_input', 'transform_data', 'save_result']);
+  });
+});
+<% } %>

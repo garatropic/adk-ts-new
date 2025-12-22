@@ -1,0 +1,124 @@
+{
+    "$schema": "http://json-schema.org/schema",
+    "$id": "CreateAdkAgent",
+    "title": "Create ADK Agent",
+    "type": "object",
+    "properties": {
+        "name": {
+            "type": "string",
+            "description": "The name of the agent project",
+            "$default": {
+                "$source": "argv",
+                "index": 0
+            },
+            "x-prompt": "What is the name of your agent project?"
+        },
+        "directory": {
+            "type": "string",
+            "description": "Directory where the project will be created",
+            "default": ""
+        },
+        "description": {
+            "type": "string",
+            "description": "Project description",
+            "default": "My ADK Agent"
+        },
+        "templates": {
+            "type": "array",
+            "description": "Agent templates to include",
+            "items": {
+                "type": "string",
+                "enum": [
+                    "basic",
+                    "multi-tool",
+                    "team",
+                    "streaming",
+                    "workflow"
+                ]
+            },
+            "default": [
+                "multi-tool"
+            ],
+            "x-prompt": {
+                "message": "Select agent templates to include:",
+                "type": "list",
+                "multiselect": true,
+                "items": [
+                    {
+                        "value": "basic",
+                        "label": "Basic Agent (getCurrentTime - from docs quickstart)"
+                    },
+                    {
+                        "value": "multi-tool",
+                        "label": "Multi-tool Agent (weather + time - from docs quickstart)"
+                    },
+                    {
+                        "value": "team",
+                        "label": "Agent Team (greeting + farewell + weather delegation)"
+                    },
+                    {
+                        "value": "streaming",
+                        "label": "Streaming Agent (Live API voice/text)"
+                    },
+                    {
+                        "value": "workflow",
+                        "label": "Workflow Agent (Sequential/Loop/Parallel)"
+                    }
+                ]
+            }
+        },
+        "modelProvider": {
+            "type": "string",
+            "description": "LLM model provider",
+            "enum": [
+                "gemini",
+                "openai",
+                "anthropic",
+                "custom"
+            ],
+            "default": "gemini",
+            "x-prompt": {
+                "message": "Select your preferred model provider:",
+                "type": "list",
+                "items": [
+                    {
+                        "value": "gemini",
+                        "label": "Google Gemini (Google AI Studio or Vertex AI)"
+                    },
+                    {
+                        "value": "openai",
+                        "label": "OpenAI (GPT models via LiteLLM)"
+                    },
+                    {
+                        "value": "anthropic",
+                        "label": "Anthropic (Claude models via LiteLLM)"
+                    },
+                    {
+                        "value": "custom",
+                        "label": "Other/Custom (Manual configuration)"
+                    }
+                ]
+            }
+        },
+        "model": {
+            "type": "string",
+            "description": "Specific model to use",
+            "default": "gemini-3.0-flash"
+        },
+        "installDependencies": {
+            "type": "boolean",
+            "description": "Install dependencies after generation",
+            "default": true,
+            "x-prompt": "Install dependencies now?"
+        },
+        "initGit": {
+            "type": "boolean",
+            "description": "Initialize git repository",
+            "default": true,
+            "x-prompt": "Initialize git repository?"
+        }
+    },
+    "required": [
+        "name"
+    ]
+}

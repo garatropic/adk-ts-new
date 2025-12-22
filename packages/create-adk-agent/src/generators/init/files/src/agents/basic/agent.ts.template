@@ -1,0 +1,34 @@
+import { LlmAgent, FunctionTool } from '@google/adk';<% if (modelProvider === 'openai' || modelProvider === 'anthropic') { %>
+import { LiteLlm } from '@google/adk';<% } %>
+import { z } from 'zod';
+
+// Tool to get current time
+const getCurrentTime = new FunctionTool({
+  name: 'get_current_time',
+  description: 'Returns the current time in the specified timezone.',
+  parameters: z.object({
+    timezone: z
+      .string()
+      .optional()
+      .describe('The timezone to use (e.g., "America/New_York", "Europe/London")'),
+  }),
+  execute: ({ timezone = 'UTC' }) => {
+    const now = new Date();
+    const timeString = now.toLocaleString('en-US', { timeZone: timezone });
+    return {
+      status: 'success',
+      report: `The current time in ${timezone} is ${timeString}`,
+    };
+  },
+});
+
+// Create the agent
+export const rootAgent = new LlmAgent({
+  name: 'hello_time_agent',
+  <% if (modelProvider === 'gemini') { %>model: '<%= model %>',<% } else if (modelProvider === 'openai' || modelProvider === 'anthropic') { %>model: new LiteLlm({ model: '<%= model %>' }),<% } else { %>model: '<%= model %>',<% } %>
+  description: 'An agent that can tell you the current time in any timezone.',
+  instruction: `You are a friendly time-telling assistant. When asked about the time, 
+use the get_current_time tool to provide the current time in the requested timezone. 
+If no timezone is specified, use UTC as the default.`,
+  tools: [getCurrentTime],
+});

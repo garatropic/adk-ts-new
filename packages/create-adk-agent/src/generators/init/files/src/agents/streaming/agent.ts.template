@@ -1,0 +1,36 @@
+import { LlmAgent, FunctionTool } from '@google/adk';<% if (modelProvider === 'openai' || modelProvider === 'anthropic') { %>
+import { LiteLlm } from '@google/adk';<% } %>
+import { z } from 'zod';
+
+// Tool that simulates a long-running operation
+const processData = new FunctionTool({
+  name: 'process_data',
+  description: 'Processes data and returns the result.',
+  parameters: z.object({
+    data: z.string().describe('The data to process'),
+  }),
+  execute: ({ data }) => {
+    // Simulate processing
+    const processedData = data.split('').reverse().join('');
+    return {
+      status: 'success',
+      report: `Processed data: ${processedData}`,
+    };
+  },
+});
+
+// Streaming agent - uses Live API for streaming responses
+export const rootAgent = new LlmAgent({
+  name: 'streaming_agent',
+  <% if (modelProvider === 'gemini') { %>model: '<%= model %>',<% } else if (modelProvider === 'openai' || modelProvider === 'anthropic') { %>model: new LiteLlm({ model: '<%= model %>' }),<% } else { %>model: '<%= model %>',<% } %>
+  description: 'An agent that demonstrates streaming responses.',
+  instruction: `You are a helpful assistant that provides streaming responses.
+When processing data, use the process_data tool and explain what you're doing.
+Provide detailed, step-by-step explanations to demonstrate streaming.`,
+  tools: [processData],
+});
+
+// Note: To enable streaming in your application, use the ADK Live API:
+// - For CLI: Use 'adk run' with --stream flag
+// - For web: ADK DevTools UI has streaming enabled by default
+// - For programmatic use: Use agent.run() with streaming options

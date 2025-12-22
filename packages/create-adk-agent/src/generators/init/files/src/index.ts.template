@@ -1,0 +1,61 @@
+import 'dotenv/config';
+<% if (hasBasic) { %>import { rootAgent as basicAgent } from './agents/basic/agent.js';
+<% } %><% if (hasMultiTool) { %>import { rootAgent as multiToolAgent } from './agents/multi-tool/agent.js';
+<% } %><% if (hasTeam) { %>import { rootAgent as teamAgent } from './agents/team/root-agent.js';
+<% } %><% if (hasStreaming) { %>import { rootAgent as streamingAgent } from './agents/streaming/agent.js';
+<% } %><% if (hasWorkflow) { %>import { rootAgent as workflowAgent } from './agents/workflow/agent.js';
+<% } %>
+// Validate required environment variables based on model
+const modelProvider = '<%= modelProvider %>';
+const model = '<%= model %>';
+
+if (modelProvider === 'gemini' && !process.env.GEMINI_API_KEY) {
+  console.error('❌ GEMINI_API_KEY is required for Gemini models.');
+  console.error('Get your API key from: https://aistudio.google.com/apikey');
+  console.error('Add it to your .env file: GEMINI_API_KEY=your_key_here');
+  process.exit(1);
+}
+
+if (modelProvider === 'openai' && !process.env.OPENAI_API_KEY) {
+  console.error('❌ OPENAI_API_KEY is required for OpenAI models.');
+  console.error('Get your API key from: https://platform.openai.com/api-keys');
+  console.error('Add it to your .env file: OPENAI_API_KEY=your_key_here');
+  process.exit(1);
+}
+
+if (modelProvider === 'anthropic' && !process.env.ANTHROPIC_API_KEY) {
+  console.error('❌ ANTHROPIC_API_KEY is required for Anthropic models.');
+  console.error('Get your API key from: https://console.anthropic.com/settings/keys');
+  console.error('Add it to your .env file: ANTHROPIC_API_KEY=your_key_here');
+  process.exit(1);
+}
+
+console.log('✅ Environment configured successfully');
+console.log(`📦 Model Provider: ${modelProvider}`);
+console.log(`🤖 Model: ${model}`);
+console.log('');
+console.log('Available agents:');
+<% if (hasBasic) { %>console.log('  - basicAgent: Basic agent with time tool');
+<% } %><% if (hasMultiTool) { %>console.log('  - multiToolAgent: Agent with multiple tools');
+<% } %><% if (hasTeam) { %>console.log('  - teamAgent: Multi-agent team coordination');
+<% } %><% if (hasStreaming) { %>console.log('  - streamingAgent: Streaming responses with Live API');
+<% } %><% if (hasWorkflow) { %>console.log('  - workflowAgent: Workflow patterns (sequential/loop/parallel)');
+<% } %>console.log('');
+console.log('Run agents with ADK DevTools:');
+console.log('  npm run adk:web   - Web UI for all agents');
+console.log('  npm run adk:run   - CLI runner');
+
+// Export agents for ADK DevTools
+<% if (hasBasic) { %>export { basicAgent };
+<% } %><% if (hasMultiTool) { %>export { multiToolAgent };
+<% } %><% if (hasTeam) { %>export { teamAgent };
+<% } %><% if (hasStreaming) { %>export { streamingAgent };
+<% } %><% if (hasWorkflow) { %>export { workflowAgent };
+<% } %>
+// Default export for convenience
+<% if (hasMultiTool) { %>export default multiToolAgent;
+<% } else if (hasBasic) { %>export default basicAgent;
+<% } else if (hasTeam) { %>export default teamAgent;
+<% } else if (hasStreaming) { %>export default streamingAgent;
+<% } else if (hasWorkflow) { %>export default workflowAgent;
+<% } %>

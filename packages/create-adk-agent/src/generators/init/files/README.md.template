@@ -1,0 +1,242 @@
+# <%= projectName %>
+
+<%= description %>
+
+## 🔐 Security First - API Keys
+
+**⚠️ IMPORTANT: Never commit your `.env` file to version control!**
+
+This project requires API keys for LLM models. Your `.env` file is already in `.gitignore` to protect your keys.
+
+### Get Your API Key
+
+<% if (modelProvider === 'gemini') { %>**Google Gemini API Key:**
+- Visit [Google AI Studio](https://aistudio.google.com/apikey)
+- Create or sign in to your Google account
+- Generate an API key
+- Add it to your `.env` file:
+  ```
+  GEMINI_API_KEY=your_actual_api_key_here
+  ```
+<% } else if (modelProvider === 'openai') { %>**OpenAI API Key:**
+- Visit [OpenAI Platform](https://platform.openai.com/api-keys)
+- Sign in or create an account
+- Generate an API key
+- Add it to your `.env` file:
+  ```
+  OPENAI_API_KEY=your_actual_api_key_here
+  ```
+<% } else if (modelProvider === 'anthropic') { %>**Anthropic API Key:**
+- Visit [Anthropic Console](https://console.anthropic.com/settings/keys)
+- Sign in or create an account
+- Generate an API key
+- Add it to your `.env` file:
+  ```
+  ANTHROPIC_API_KEY=your_actual_api_key_here
+  ```
+<% } %>
+
+### Setup Environment
+
+1. Copy the example environment file:
+   ```bash
+   cp .env.example .env
+   ```
+
+2. Edit `.env` and add your actual API key
+
+3. Verify it's ignored by git:
+   ```bash
+   git status  # .env should NOT appear
+   ```
+
+## 🚀 Quick Start
+
+### Install Dependencies
+
+```bash
+npm install
+```
+
+### Run in Development Mode
+
+Using **tsx** for instant TypeScript execution with hot reload:
+
+```bash
+npm run dev
+```
+
+This will:
+- ✅ Start your agent immediately (no build step!)
+- ✅ Watch for file changes and auto-reload
+- ✅ Show compilation errors instantly
+
+### Run with ADK DevTools
+
+ADK provides powerful development tools:
+
+```bash
+# Web UI - Interactive testing in your browser
+npm run adk:web
+
+# CLI Runner - Test agents from command line
+npm run adk:run
+```
+
+## 📁 Project Structure
+
+```
+<%= projectName %>/
+├── src/
+│   ├── index.ts          # Entry point with environment validation
+<% if (hasBasic) { %>│   ├── agents/basic/    # Basic agent with time tool
+<% } %><% if (hasMultiTool) { %>│   ├── agents/multi-tool/  # Agent with multiple tools
+<% } %><% if (hasTeam) { %>│   ├── agents/team/     # Multi-agent team coordination
+<% } %><% if (hasStreaming) { %>│   ├── agents/streaming/ # Streaming responses
+<% } %><% if (hasWorkflow) { %>│   └── agents/workflow/  # Workflow patterns
+<% } %>├── tests/             # Jest tests
+├── .env                  # Your API keys (DO NOT COMMIT)
+├── .env.example          # Example environment file
+├── package.json          # Dependencies and scripts
+└── tsconfig.json         # TypeScript configuration
+```
+
+## 🤖 Available Agents
+
+<% if (hasBasic) { %>### Basic Agent
+Simple agent that demonstrates:
+- ✅ FunctionTool creation with Zod validation
+- ✅ Time-based tool (get current time in any timezone)
+- ✅ Basic agent configuration
+
+**Run:** `npm run dev` or access via ADK Web UI
+<% } %>
+<% if (hasMultiTool) { %>### Multi-Tool Agent
+Demonstrates multiple tools:
+- 🕐 Time tool (get current time)
+- 🌤️ Weather tool (get weather for location)
+- 🧮 Calculator tool (mathematical calculations)
+
+**Run:** `npm run adk:run` and select this agent
+<% } %>
+<% if (hasTeam) { %>### Team Agent
+Multi-agent coordination:
+- 👋 Greeting agent (personalized hellos in multiple languages)
+- 👋 Farewell agent (personalized goodbyes in multiple languages)
+- 🎯 Root agent (coordinates and delegates tasks)
+
+**Run via ADK Web UI** to see agent delegation in action
+<% } %>
+<% if (hasStreaming) { %>### Streaming Agent
+Demonstrates streaming responses:
+- 📡 Real-time response streaming with Live API
+- 🔄 Long-running operation simulation
+- 💬 Detailed step-by-step explanations
+
+**Best experienced in ADK Web UI** with streaming enabled
+<% } %>
+<% if (hasWorkflow) { %>### Workflow Agent
+Sequential workflow patterns:
+- ✅ Input validation step
+- 🔄 Data transformation step
+- 💾 Result saving step
+
+**Run with:** `npm run adk:run` to see ordered execution
+<% } %>
+
+## 🛠️ Development Workflow
+
+### Development Mode (tsx watch)
+
+```bash
+npm run dev
+```
+
+**Why tsx?**
+- ⚡ Instant start (no build step)
+- 🔥 Hot reload on file changes
+- 🐛 Better error messages
+- 📦 Zero configuration
+
+### Build for Production
+
+```bash
+npm run build    # Compile TypeScript to dist/
+npm run prod     # Run compiled JavaScript
+```
+
+### Testing
+
+```bash
+npm test         # Run all tests
+npm run test:watch  # Watch mode
+```
+
+### Code Quality
+
+```bash
+npm run lint     # Check for issues
+npm run format   # Format with Prettier
+```
+
+## 🎯 Model Configuration
+
+Your project is configured to use:
+- **Provider:** <%= modelProvider %>
+- **Model:** <%= model %>
+
+### Change Models
+
+Edit your agent files to use different models:
+
+<% if (modelProvider === 'gemini') { %>```typescript
+// Direct model string for Gemini
+model: 'gemini-3.0-flash',  // Fast responses
+model: 'gemini-3.0-pro',    // Best quality
+model: 'gemini-2.5-flash',  // Latest Flash
+```
+<% } else if (modelProvider === 'openai') { %>```typescript
+import { LiteLlm } from '@google/adk';
+
+// Use LiteLLM wrapper for OpenAI
+model: new LiteLlm({ model: 'openai/gpt-4o' }),
+model: new LiteLlm({ model: 'openai/gpt-4o-mini' }),
+```
+<% } else if (modelProvider === 'anthropic') { %>```typescript
+import { LiteLlm } from '@google/adk';
+
+// Use LiteLLM wrapper for Anthropic
+model: new LiteLlm({ model: 'anthropic/claude-3-5-sonnet' }),
+model: new LiteLlm({ model: 'anthropic/claude-3-5-haiku' }),
+```
+<% } %>
+
+## 📚 Learn More
+
+- [ADK Documentation](https://google.github.io/adk-docs/)
+- [TypeScript Quick Start](https://google.github.io/adk-docs/get-started/typescript/)
+- [Agent Tutorial](https://google.github.io/adk-docs/tutorial/agent/)
+- [API Reference](https://google.github.io/adk-docs/api/)
+
+## 🐛 Troubleshooting
+
+### "GEMINI_API_KEY is required" error
+- Make sure `.env` file exists and contains your API key
+- Key format: `GEMINI_API_KEY=your_key_here` (no quotes)
+- Restart your development server after editing `.env`
+
+### Module not found errors
+- Run `npm install` to ensure all dependencies are installed
+- Check that you're using `.js` extensions in imports (required for ESM)
+
+### TypeScript errors
+- Run `npm run build` to see detailed compilation errors
+- Check `tsconfig.json` has `verbatimModuleSyntax: false`
+
+### Tool execution errors
+- Verify your tool's Zod schema matches the parameters
+- Check the tool's `execute` function returns `{ status, report }`
+
+## 📄 License
+
+MIT
