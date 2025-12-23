@@ -1,90 +1,93 @@
 name: Release and Publish
 
 on:
-    push:
-        tags:
-            - "v*.*.*"
-            - "create-adk-agent@*.*.*"
+  push:
+    tags:
+      - "v*.*.*"
+      - "create-adk-agent@*.*.*"
+permissions:
+  id-token: write # Required for OIDC
+  contents: read
 
 jobs:
-    release:
-        runs-on: ubuntu-latest
-        permissions:
-            contents: write
-            id-token: write # Required for npm provenance
+  release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      id-token: write # Required for npm provenance
 
-        steps:
-            - name: Checkout
-              uses: actions/checkout@v4
-              with:
-                  fetch-depth: 0
-                  token: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
 
-            - name: Setup Node.js
-              uses: actions/setup-node@v4
-              with:
-                  node-version: "20"
-                  registry-url: "https://registry.npmjs.org"
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          registry-url: "https://registry.npmjs.org"
 
-            - name: Setup pnpm
-              uses: pnpm/action-setup@v2
-              with:
-                  version: 10
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 10
 
-            - name: Get pnpm store directory
-              shell: bash
-              run: |
-                  echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+      - name: Get pnpm store directory
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
 
-            - name: Setup pnpm cache
-              uses: actions/cache@v3
-              with:
-                  path: ${{ env.STORE_PATH }}
-                  key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
-                  restore-keys: |
-                      ${{ runner.os }}-pnpm-store-
+      - name: Setup pnpm cache
+        uses: actions/cache@v3
+        with:
+          path: ${{ env.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
 
-            - name: Install dependencies
-              run: pnpm install --frozen-lockfile
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
 
-            - name: Build packages
-              run: pnpm nx run-many -t build
+      - name: Build packages
+        run: pnpm nx run-many -t build
 
-            - name: Run tests
-              run: pnpm nx run-many -t test
+      - name: Run tests
+        run: pnpm nx run-many -t test
 
-            - name: Extract version from tag
-              id: version
-              run: |
-                  TAG=${GITHUB_REF#refs/tags/}
-                  if [[ $TAG == create-adk-agent@* ]]; then
-                    VERSION=${TAG#create-adk-agent@}
-                  else
-                    VERSION=${TAG#v}
-                  fi
-                  echo "version=$VERSION" >> $GITHUB_OUTPUT
-                  echo "tag=$TAG" >> $GITHUB_OUTPUT
+      - name: Extract version from tag
+        id: version
+        run: |
+          TAG=${GITHUB_REF#refs/tags/}
+          if [[ $TAG == create-adk-agent@* ]]; then
+            VERSION=${TAG#create-adk-agent@}
+          else
+            VERSION=${TAG#v}
+          fi
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "tag=$TAG" >> $GITHUB_OUTPUT
 
-            - name: Publish to npm with provenance
-              run: |
-                  cd packages/create-adk-agent
-                  pnpm publish --access public --provenance --no-git-checks
+      - name: Publish to npm with provenance
+        run: |
+          cd packages/create-adk-agent
+          npm publish
 
-            - name: Create GitHub Release
-              uses: actions/create-release@v1
-              env:
-                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-              with:
-                  tag_name: ${{ steps.version.outputs.tag }}
-                  release_name: Release ${{ steps.version.outputs.version }}
-                  body: |
-                      ## create-adk-agent v${{ steps.version.outputs.version }}
+      - name: Create GitHub Release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ steps.version.outputs.tag }}
+          release_name: Release ${{ steps.version.outputs.version }}
+          body: |
+            ## create-adk-agent v${{ steps.version.outputs.version }}
 
-                      ### Installation
-                      ```bash
-                      npx create-adk-agent@${{ steps.version.outputs.version }} my-agent
-                      ```
+            ### Installation
+            ```bash
+            npx create-adk-agent@${{ steps.version.outputs.version }} my-agent
+            ```
 
-                      See [CHANGELOG.md](https://github.com/garatropic/adk-ts-new/blob/main/CHANGELOG.md) for details.
-                  draft: false
-                  prerelease: false
+            See [CHANGELOG.md](https://github.com/garatropic/adk-ts-new/blob/main/CHANGELOG.md) for details.
+          draft: false
+          prerelease: false
