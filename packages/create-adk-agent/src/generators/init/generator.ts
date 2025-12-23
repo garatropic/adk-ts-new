@@ -7,7 +7,11 @@ import {
   names,
 } from '@nx/devkit';
 import * as path from 'path';
+import { fileURLToPath } from 'url';
 import { InitGeneratorSchema } from './schema.js';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 // Model options based on provider
 // Note: Users can change to any model in their generated project

@@ -12,8 +12,15 @@ Scaffold production-ready ADK TypeScript projects in seconds with best practices
 npx create-adk-agent my-agent
 ```
 
+Or use it non-interactively:
+
+```bash
+npx create-adk-agent my-agent --template=basic --modelProvider=gemini --model=gemini-2.0-flash
+```
+
 That's it! You'll get a fully configured ADK project with:
-- ✅ TypeScript configured for ADK
+
+- ✅ TypeScript configured for ADK (ES2022, NodeNext)
 - ✅ Environment setup with API key validation
 - ✅ Working agent examples from official docs
 - ✅ Hot reload development with tsx
@@ -25,6 +32,7 @@ That's it! You'll get a fully configured ADK project with:
 Instead of manually setting up TypeScript, configuring ESM, managing API keys, and copying examples from docs, `create-adk-agent` does it all for you in one command.
 
 **Perfect for:**
+
 - 🎓 Learning ADK quickly with working examples
 - 🚀 Starting new ADK projects without boilerplate hassle
 - 📦 Getting ADK best practices out of the box
@@ -76,6 +84,7 @@ npx create-adk-agent my-agent
 ```
 
 You'll choose:
+
 - Which agent templates to include
 - Your preferred model provider (Gemini, OpenAI, or Anthropic)
 - Whether to install dependencies now

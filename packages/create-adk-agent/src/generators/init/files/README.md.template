@@ -60,16 +60,17 @@ npm install
 
 ### Run in Development Mode
 
-Using **tsx** for instant TypeScript execution with hot reload:
+Using **Vite** for fast TypeScript execution with hot reload:
 
 ```bash
 npm run dev
 ```
 
 This will:
-- ✅ Start your agent immediately (no build step!)
+- ✅ Start your agent immediately with Vite's fast HMR
 - ✅ Watch for file changes and auto-reload
 - ✅ Show compilation errors instantly
+- ✅ Optimized build performance
 
 ### Run with ADK DevTools
 

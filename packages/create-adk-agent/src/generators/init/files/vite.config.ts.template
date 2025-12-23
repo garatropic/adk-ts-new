@@ -1,0 +1,36 @@
+import { defineConfig } from 'vite';
+import { VitePluginNode } from 'vite-plugin-node';
+
+export default defineConfig({
+  plugins: [
+    ...VitePluginNode({
+      adapter: 'node',
+      appPath: './src/index.ts',
+      exportName: 'rootAgent',
+      tsCompiler: 'esbuild',
+    }),
+  ],
+  build: {
+    outDir: 'dist',
+    lib: {
+      entry: './src/index.ts',
+      formats: ['es'],
+      fileName: 'index',
+    },
+    rollupOptions: {
+      external: [
+        '@google/adk',
+        '@google/adk-devtools',
+        'dotenv',
+        'zod',
+      ],
+    },
+    target: 'node20',
+    minify: false,
+  },
+  resolve: {
+    alias: {
+      '@': './src',
+    },
+  },
+});

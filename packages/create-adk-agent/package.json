@@ -18,7 +18,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/mainawycliffe/adk-ts-new"
+    "url": "https://github.com/garatropic/adk-ts-new"
   },
   "author": "Maina Wycliffe",
   "license": "MIT",
@@ -48,6 +48,7 @@
     "dist",
     "bin",
     "generators.json",
+    "templates",
     "src/generators/**/files/**",
     "src/generators/**/schema.json",
     "!**/*.tsbuildinfo"
@@ -65,13 +66,28 @@
           "main": "packages/create-adk-agent/src/index.ts",
           "tsConfig": "packages/create-adk-agent/tsconfig.lib.json",
           "skipTypeCheck": true,
-          "stripLeadingPaths": true
+          "stripLeadingPaths": true,
+          "assets": [
+            {
+              "input": "packages/create-adk-agent/src/generators/init/files",
+              "glob": "**/*",
+              "output": "generators/init/files"
+            },
+            {
+              "input": "packages/create-adk-agent/src/generators/init",
+              "glob": "schema.json",
+              "output": "generators/init"
+            }
+          ]
         }
       }
     }
   },
   "dependencies": {
     "@nx/devkit": "^22.3.3",
-    "@swc/helpers": "~0.5.11"
+    "@swc/helpers": "~0.5.11",
+    "kolorist": "^1.8.0",
+    "minimist": "^1.2.8",
+    "prompts": "^2.4.2"
   }
 }
