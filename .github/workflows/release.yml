@@ -68,7 +68,7 @@ jobs:
             - name: Publish to npm with provenance
               run: |
                   cd packages/create-adk-agent
-                  npm publish --access public --provenance
+                  pnpm publish --access public --provenance --no-git-checks
 
             - name: Create GitHub Release
               uses: actions/create-release@v1
