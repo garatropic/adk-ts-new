@@ -77,6 +77,12 @@
       "generatorOptions": {
         "packageRoot": "packages/{projectName}",
         "currentVersionResolver": "git-tag"
+      },
+      "git": {
+        "commit": true,
+        "tag": true,
+        "commitMessage": "chore(release): publish {version}",
+        "tagMessage": "Release {version}"
       }
     },
     "changelog": {
@@ -98,12 +104,6 @@
           "versionTitleDate": true
         }
       }
-    },
-    "git": {
-      "commit": true,
-      "tag": true,
-      "commitMessage": "chore(release): publish {version}",
-      "tagMessage": "Release {version}"
     }
   }
 }
