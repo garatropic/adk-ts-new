@@ -1,0 +1,2 @@
+# Ignore template directories - these are not Nx projects
+packages/create-adk-agent/templates/
