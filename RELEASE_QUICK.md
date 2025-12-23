@@ -6,19 +6,29 @@
 
 npm trusted publishing uses OIDC - no tokens needed!
 
+**⚠️ IMPORTANT:** The package must already exist on npm before trusted publishing works. If this is the first publish, you'll need to publish manually once:
+
+```bash
+cd packages/create-adk-agent
+npm login
+npm publish
+```
+
+After the first manual publish:
+
 1. **Go to npm package settings**:
    - Visit: https://www.npmjs.com/package/create-adk-agent/access
-   - Click "Manage publishing access"
+   - Click "Publishing Access"
 
 2. **Add GitHub as trusted publisher**:
-   - Click "Add trusted publisher"
+   - Click "Add Automation"
    - Provider: **GitHub Actions**
    - Repository: `garatropic/adk-ts-new`
    - Workflow: `release.yml`
    - Environment: (leave empty)
    - Click "Add"
 
-✅ Done! No NPM_TOKEN secret needed - authentication happens automatically via OIDC.
+✅ Done! No NPM_TOKEN secret needed - authentication happens automatically via OIDC for all future releases.
 
 ## Creating a Release
 
