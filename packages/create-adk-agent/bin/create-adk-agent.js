@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 // @ts-check
-import { blue, green, red, reset, yellow, cyan } from 'kolorist';
+import { blue, cyan, green, red, reset, yellow } from 'kolorist';
 import minimist from 'minimist';
 import fs from 'node:fs';
 import path from 'node:path';
@@ -49,7 +49,11 @@ const TEMPLATES = [
 const MODEL_PROVIDERS = {
   gemini: {
     name: 'Google Gemini',
-    models: ['gemini-2.0-flash', 'gemini-2.0-flash-thinking-exp-01-21', 'gemini-1.5-pro'],
+    models: [
+      'gemini-2.0-flash',
+      'gemini-2.0-flash-thinking-exp-01-21',
+      'gemini-1.5-pro',
+    ],
     apiKeyVar: 'GEMINI_API_KEY',
     importStatement: "import { LlmAgent, FunctionTool } from '@google/adk';",
     modelConfig: (model) => `'${model}'`,
@@ -58,14 +62,20 @@ const MODEL_PROVIDERS = {
     name: 'OpenAI',
     models: ['openai/gpt-4o', 'openai/gpt-4o-mini', 'openai/gpt-4-turbo'],
     apiKeyVar: 'OPENAI_API_KEY',
-    importStatement: "import { LlmAgent, FunctionTool, LiteLlm } from '@google/adk';",
+    importStatement:
+      "import { LlmAgent, FunctionTool, LiteLlm } from '@google/adk';",
     modelConfig: (model) => `new LiteLlm({ model: '${model}' })`,
   },
   anthropic: {
     name: 'Anthropic (Claude)',
-    models: ['anthropic/claude-3-5-sonnet', 'anthropic/claude-3-opus', 'anthropic/claude-3-haiku'],
+    models: [
+      'anthropic/claude-3-5-sonnet',
+      'anthropic/claude-3-opus',
+      'anthropic/claude-3-haiku',
+    ],
     apiKeyVar: 'ANTHROPIC_API_KEY',
-    importStatement: "import { LlmAgent, FunctionTool, LiteLlm } from '@google/adk';",
+    importStatement:
+      "import { LlmAgent, FunctionTool, LiteLlm } from '@google/adk';",
     modelConfig: (model) => `new LiteLlm({ model: '${model}' })`,
   },
 };
@@ -79,7 +89,9 @@ function formatTargetDir(targetDir) {
 }
 
 function isValidPackageName(projectName) {
-  return /^(?:@[a-z0-9-*~][a-z0-9-*._~]*\/)?[a-z0-9-~][a-z0-9-._~]*$/.test(projectName);
+  return /^(?:@[a-z0-9-*~][a-z0-9-*._~]*\/)?[a-z0-9-~][a-z0-9-._~]*$/.test(
+    projectName,
+  );
 }
 
 function toValidPackageName(projectName) {
@@ -127,7 +139,7 @@ function replacePlaceholders(root, files, config) {
   for (const file of Array.isArray(files) ? files : [files]) {
     const filePath = path.join(root, file);
     if (!fs.existsSync(filePath)) continue;
-    
+
     const fileContent = fs.readFileSync(filePath, 'utf-8');
     const newFileContent = Object.keys(config).reduce(
       (content, placeholder) =>
@@ -330,16 +342,16 @@ async function init() {
 
   console.log(`${green('✓')} Project created successfully!\n`);
   console.log(`${cyan('Next steps:')}\n`);
-  
+
   if (root !== cwd) {
     console.log(`  cd ${path.relative(cwd, root)}`);
   }
-  
+
   console.log(`  npm install`);
   console.log(`  cp .env.example .env`);
   console.log(`  ${yellow('# Edit .env and add your API key')}`);
   console.log(`  npm run dev\n`);
-  
+
   console.log(`${cyan('Configuration:')}`);
   console.log(`  Template: ${green(template)}`);
   console.log(`  Provider: ${green(providerConfig.name)}`);

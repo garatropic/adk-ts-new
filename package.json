@@ -2,7 +2,12 @@
   "name": "@adk-ts-new/source",
   "version": "0.0.0",
   "license": "MIT",
-  "scripts": {},
+  "scripts": {
+    "release": "nx release",
+    "release:version": "nx release version",
+    "release:publish": "nx release publish",
+    "release:dry-run": "nx release --dry-run"
+  },
   "private": true,
   "dependencies": {},
   "devDependencies": {
