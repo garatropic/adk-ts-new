@@ -1,6 +1,6 @@
 {
   "name": "create-adk-agent",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "description": "Nx generator for scaffolding ADK (Agent Development Kit) TypeScript projects with multiple templates, multi-model support, and modern tooling",
   "keywords": [
     "adk",
