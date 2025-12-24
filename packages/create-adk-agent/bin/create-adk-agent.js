@@ -16,7 +16,7 @@ const TEMPLATES = [
   {
     name: 'basic',
     display: 'Basic Agent',
-    description: 'Single agent with one tool (time example)',
+    description: 'Single agent with one tool (from ADK docs)',
     color: green,
   },
   {
@@ -25,24 +25,6 @@ const TEMPLATES = [
     description: 'Agent with multiple tools (recommended)',
     color: blue,
   },
-  {
-    name: 'streaming',
-    display: 'Streaming Agent',
-    description: 'Agent with Live API streaming support',
-    color: cyan,
-  },
-  {
-    name: 'team',
-    display: 'Multi-Agent Team',
-    description: 'Multiple agents working together',
-    color: yellow,
-  },
-  {
-    name: 'workflow',
-    display: 'Workflow Agent',
-    description: 'Sequential and parallel execution patterns',
-    color: yellow,
-  },
 ];
 
 // Model provider configurations
@@ -50,9 +32,10 @@ const MODEL_PROVIDERS = {
   gemini: {
     name: 'Google Gemini',
     models: [
+      'gemini-3.0-flash',
+      'gemini-3.0-pro',
+      'gemini-2.5-flash',
       'gemini-2.0-flash',
-      'gemini-2.0-flash-thinking-exp-01-21',
-      'gemini-1.5-pro',
     ],
     apiKeyVar: 'GEMINI_API_KEY',
     importStatement: "import { LlmAgent, FunctionTool } from '@google/adk';",
@@ -60,7 +43,12 @@ const MODEL_PROVIDERS = {
   },
   openai: {
     name: 'OpenAI',
-    models: ['openai/gpt-4o', 'openai/gpt-4o-mini', 'openai/gpt-4-turbo'],
+    models: [
+      'openai/gpt-5',
+      'openai/gpt-5-mini',
+      'openai/gpt-4o',
+      'openai/gpt-4o-mini',
+    ],
     apiKeyVar: 'OPENAI_API_KEY',
     importStatement:
       "import { LlmAgent, FunctionTool, LiteLlm } from '@google/adk';",
@@ -69,9 +57,10 @@ const MODEL_PROVIDERS = {
   anthropic: {
     name: 'Anthropic (Claude)',
     models: [
+      'anthropic/claude-4.5-sonnet',
+      'anthropic/claude-4-sonnet',
+      'anthropic/claude-4-opus',
       'anthropic/claude-3-5-sonnet',
-      'anthropic/claude-3-opus',
-      'anthropic/claude-3-haiku',
     ],
     apiKeyVar: 'ANTHROPIC_API_KEY',
     importStatement:

@@ -30,10 +30,7 @@
                 "type": "string",
                 "enum": [
                     "basic",
-                    "multi-tool",
-                    "team",
-                    "streaming",
-                    "workflow"
+                    "multi-tool"
                 ]
             },
             "default": [
@@ -50,19 +47,7 @@
                     },
                     {
                         "value": "multi-tool",
-                        "label": "Multi-tool Agent (weather + time - from docs quickstart)"
-                    },
-                    {
-                        "value": "team",
-                        "label": "Agent Team (greeting + farewell + weather delegation)"
-                    },
-                    {
-                        "value": "streaming",
-                        "label": "Streaming Agent (Live API voice/text)"
-                    },
-                    {
-                        "value": "workflow",
-                        "label": "Workflow Agent (Sequential/Loop/Parallel)"
+                        "label": "Multi-tool Agent (time + weather - from docs quickstart)"
                     }
                 ]
             }

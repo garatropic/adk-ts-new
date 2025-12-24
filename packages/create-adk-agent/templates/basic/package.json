@@ -13,8 +13,8 @@
         "test:watch": "jest --watch",
         "lint": "eslint src/**/*.ts",
         "format": "prettier --write src/**/*.ts",
-        "adk:web": "adk web",
-        "adk:run": "adk run src/index.ts"
+        "adk:web": "npx @google/adk-devtools web",
+        "adk:run": "npx @google/adk-devtools run src/index.ts"
     },
     "keywords": [
         "adk",
