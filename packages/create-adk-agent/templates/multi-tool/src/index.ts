@@ -16,7 +16,7 @@ if (
   process.exit(1);
 }
 
-/* Mock tool implementation */
+/* Mock tool implementations */
 const getCurrentTime = new FunctionTool({
   name: 'get_current_time',
   description: 'Returns the current time in a specified city.',
@@ -33,27 +33,28 @@ const getCurrentTime = new FunctionTool({
   },
 });
 
-export const rootAgent = new LlmAgent({
-  name: 'hello_time_agent',
-  model: __MODEL_CONFIG__,
-  description: 'Tells the current time in a specified city.',
-  instruction: `You are a helpful assistant that tells the current time in a city.
-                Use the 'getCurrentTime' tool for this purpose.`,
-  tools: [getCurrentTime],
+const getWeather = new FunctionTool({
+  name: 'get_weather',
+  description: 'Returns the current weather for a specified city.',
+  parameters: z.object({
+    city: z
+      .string()
+      .describe('The name of the city for which to retrieve the weather.'),
+  }),
+  execute: ({ city }) => {
+    return {
+      status: 'success',
+      report: `The weather in ${city} is sunny and 72°F`,
+    };
+  },
 });
 
-// Run the agent (for direct execution)
-if (import.meta.url === `file://${process.argv[1]}`) {
-  console.log('🤖 Hello Time Agent is ready!');
-  console.log('Ask me about the time in any timezone.\n');
-
-  rootAgent
-    .query('What time is it in Tokyo?')
-    .then((response) => {
-      console.log('Agent response:', response);
-    })
-    .catch((error) => {
-      console.error('Error:', error);
-      process.exit(1);
-    });
-}
+export const rootAgent = new LlmAgent({
+  name: 'multi_tool_agent',
+  model: __MODEL_CONFIG__,
+  description: 'Provides current time and weather information for cities.',
+  instruction: `You are a helpful assistant that provides time and weather information.
+                Use the 'getCurrentTime' tool to get the time in a city.
+                Use the 'getWeather' tool to get weather information for a city.`,
+  tools: [getCurrentTime, getWeather],
+});

@@ -1,83 +1,36 @@
-import { LlmAgent, FunctionTool } from '@google/adk';<% if (modelProvider === 'openai' || modelProvider === 'anthropic') { %>
+import { FunctionTool, LlmAgent } from '@google/adk';<% if (modelProvider === 'openai' || modelProvider === 'anthropic') { %>
 import { LiteLlm } from '@google/adk';<% } %>
 import { z } from 'zod';
 
-// Tool to get current time
+/* Mock tool implementations */
 const getCurrentTime = new FunctionTool({
   name: 'get_current_time',
-  description: 'Returns the current time in the specified timezone.',
+  description: 'Returns the current time in a specified city.',
   parameters: z.object({
-    timezone: z
-      .string()
-      .optional()
-      .describe('The timezone to use (e.g., "America/New_York", "Europe/London")'),
+    city: z.string().describe('The name of the city for which to retrieve the current time.'),
   }),
-  execute: ({ timezone = 'UTC' }) => {
-    const now = new Date();
-    const timeString = now.toLocaleString('en-US', { timeZone: timezone });
-    return {
-      status: 'success',
-      report: `The current time in ${timezone} is ${timeString}`,
-    };
+  execute: ({ city }) => {
+    return { status: 'success', report: `The current time in ${city} is 10:30 AM` };
   },
 });
 
-// Tool to get weather (mock data for demo)
 const getWeather = new FunctionTool({
   name: 'get_weather',
-  description: 'Returns the current weather for a given location.',
+  description: 'Returns the current weather for a specified city.',
   parameters: z.object({
-    location: z.string().describe('The city or location to get weather for'),
+    city: z.string().describe('The name of the city for which to retrieve the weather.'),
   }),
-  execute: ({ location }) => {
-    // Mock weather data - in production, call a real weather API
-    const conditions = ['sunny', 'cloudy', 'rainy', 'partly cloudy'];
-    const condition = conditions[Math.floor(Math.random() * conditions.length)];
-    const temp = Math.floor(Math.random() * 30) + 50; // 50-80°F
-    
-    return {
-      status: 'success',
-      report: `The weather in ${location} is ${condition} with a temperature of ${temp}°F`,
-    };
+  execute: ({ city }) => {
+    return { status: 'success', report: `The weather in ${city} is sunny and 72°F` };
   },
 });
 
-// Tool for calculations
-const calculate = new FunctionTool({
-  name: 'calculate',
-  description: 'Performs basic mathematical calculations.',
-  parameters: z.object({
-    expression: z
-      .string()
-      .describe('The mathematical expression to evaluate (e.g., "2 + 2", "10 * 5")'),
-  }),
-  execute: ({ expression }) => {
-    try {
-      // Simple eval for demo - in production, use a safe math parser
-      const result = eval(expression);
-      return {
-        status: 'success',
-        report: `${expression} = ${result}`,
-      };
-    } catch (error) {
-      return {
-        status: 'error',
-        report: `Error evaluating expression: ${error}`,
-      };
-    }
-  },
-});
-
-// Create the agent with multiple tools
 export const rootAgent = new LlmAgent({
   name: 'multi_tool_agent',
   <% if (modelProvider === 'gemini') { %>model: '<%= model %>',<% } else if (modelProvider === 'openai' || modelProvider === 'anthropic') { %>model: new LiteLlm({ model: '<%= model %>' }),<% } else { %>model: '<%= model %>',<% } %>
-  description: 'An agent with multiple tools for time, weather, and calculations.',
-  instruction: `You are a helpful assistant with access to multiple tools:
-- get_current_time: Get the current time in any timezone
-- get_weather: Get weather information for a location
-- calculate: Perform mathematical calculations
-
-Use the appropriate tool based on the user's request. Be friendly and helpful.`,
-  tools: [getCurrentTime, getWeather, calculate],
+  description: 'Provides current time and weather information for cities.',
+  instruction: `You are a helpful assistant that provides time and weather information.
+                Use the 'getCurrentTime' tool to get the time in a city.
+                Use the 'getWeather' tool to get weather information for a city.`,
+  tools: [getCurrentTime, getWeather],
 });

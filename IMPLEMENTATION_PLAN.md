@@ -1,18 +1,37 @@
 # ADK TypeScript Project Generator - Implementation Plan
 
 **Date:** 22 December 2025  
-**Project:** `create-adk-agent` - Nx plugin for scaffolding ADK TypeScript projects
+**Project:** `create-adk-agent` - Dual-mode scaffolding for ADK TypeScript projects
 
 ## 🎯 Project Overview
 
-Create an Nx plugin package that scaffolds ADK (Agent Development Kit) TypeScript projects with all necessary configurations, multiple example templates from official docs, and modern development tooling.
+Create a dual-mode package that scaffolds ADK (Agent Development Kit) TypeScript projects with all necessary configurations, multiple example templates from official docs, and modern development tooling.
 
 ## 📦 Package Details
 
 - **Package Name:** `@adk-ts-new/create-adk-agent` (or unscoped: `create-adk-agent`)
-- **Type:** Nx Plugin Generator
+- **Type:** Dual-mode package
+  - **Standalone CLI** (`npx create-adk-agent my-agent`) - tsx-based
+  - **Nx Plugin Generator** (within Nx workspace) - Vite-based
 - **Target:** npm registry
+
+## 🔀 Dual Architecture
+
+### Mode 1: Standalone CLI (Non-Nx Projects)
+
+- **Entry Point:** `bin/create-adk-agent.js`
+- **Templates:** `templates/` directory
+- **Dev Tool:** **tsx** (instant TypeScript execution, no build step)
 - **Usage:** `npx create-adk-agent my-agent`
+- **Best For:** Standalone projects, quick prototypes, learning
+
+### Mode 2: Nx Plugin Generator (Nx Workspaces)
+
+- **Entry Point:** `src/generators/init/`
+- **Templates:** `src/generators/init/files/`
+- **Dev Tool:** **Vite** (fast HMR, Nx integration)
+- **Usage:** Inside Nx workspace: `nx generate @adk-ts-new/create-adk-agent:init`
+- **Best For:** Monorepos, enterprise projects, team development
 
 ## ✨ Key Features
 
@@ -22,24 +41,39 @@ Users can select one or more agent templates to include in their project:
 
 - ✅ Basic Agent (getCurrentTime - from docs quickstart)
 - ✅ Multi-tool Agent (weather + time - from docs quickstart)
-- ✅ Agent Team (greeting + farewell + weather delegation)
-- ✅ Streaming Agent (Live API voice/text)
-- ✅ Workflow Agent (Sequential/Loop/Parallel)
+- ⚠️ Agent Team (greeting + farewell + weather delegation) - Advanced, not in quickstart
+- ⚠️ Streaming Agent (Live API voice/text) - Advanced, not in quickstart
+- ⚠️ Workflow Agent (Sequential/Loop/Parallel) - Advanced, not in quickstart
+
+**Recommendation:** Focus on Basic and Multi-tool templates (docs-based) for v1.0
 
 ### 2. Multi-Model Provider Support
 
-- Google Gemini (gemini-3.0-flash, gemini-3.0-pro, gemini-2.5-flash, gemini-2.0-flash)
+- Google Gemini (gemini-2.5-flash recommended per docs Dec 2024)
 - OpenAI (gpt-4o, gpt-4o-mini, gpt-4-turbo) via LiteLLM
 - Anthropic (claude-3-5-sonnet, claude-3-opus, claude-3-haiku) via LiteLLM
 - Custom/Other (manual configuration)
 
 ### 3. Modern Development Stack
 
+**Standalone (tsx):**
+
 - **tsx** - Instant TypeScript execution with watch mode (no build step in dev)
 - **TypeScript 5.9.3** - Latest stable
 - **ESLint** - Code linting
 - **Prettier** - Code formatting
 - **Jest** - Testing framework
+- **Zod** - Schema validation for tools
+
+**Nx Generator (Vite):**
+
+- **Vite** - Fast HMR and optimized builds for Nx
+- **vite-node** - TypeScript execution in dev mode
+- **vite-plugin-node** - Node.js adapter
+- **TypeScript 5.9.3** - Latest stable
+- **ESLint** - Code linting (Nx config)
+- **Prettier** - Code formatting
+- **Jest** - Testing framework (Nx integration)
 - **Zod** - Schema validation for tools
 
 ### 4. Security-First Approach
@@ -93,12 +127,14 @@ npx create-adk-agent my-agent
 
 ## 📁 Generated Project Structure
 
+### Standalone CLI Output (tsx-based)
+
 ```
 my-agent/
 ├── .env.example              # Environment template (committed)
 ├── .env                      # User's actual keys (gitignored)
 ├── .gitignore               # Includes .env, .env.local, .env*.local
-├── package.json             # Dependencies and scripts
+├── package.json             # Dependencies and tsx scripts
 ├── tsconfig.json            # TypeScript config (verbatimModuleSyntax: false)
 ├── .eslintrc.json           # ESLint configuration
 ├── .prettierrc              # Prettier configuration
@@ -106,31 +142,63 @@ my-agent/
 ├── README.md                # Dynamic based on selected templates
 ├── src/
 │   ├── index.ts             # Main entry point with API key validation
-│   ├── agents/              # Agent implementations
-│   │   ├── basic/           # If "Basic Agent" selected
-│   │   │   └── agent.ts
-│   │   ├── multi-tool/      # If "Multi-tool" selected (default)
-│   │   │   └── agent.ts
-│   │   ├── team/            # If "Agent Team" selected
-│   │   │   ├── root-agent.ts
-│   │   │   ├── greeting-agent.ts
-│   │   │   └── farewell-agent.ts
-│   │   ├── streaming/       # If "Streaming" selected
-│   │   │   └── agent.ts
-│   │   └── workflow/        # If "Workflow" selected
-│   │       └── agent.ts
-│   └── tools/               # Shared reusable tools
-│       ├── time.ts          # Time-related tools
-│       ├── weather.ts       # Weather tools
-│       └── greetings.ts     # Greeting/farewell tools
+│   └── agents/              # Agent implementations
+│       ├── basic/           # If "Basic Agent" selected
+│       │   └── agent.ts
+│       └── multi-tool/      # If "Multi-tool" selected (default)
+│           └── agent.ts
 └── tests/
-    └── agents/
-        └── [matching test files for selected templates]
+    └── agents.test.ts
+
+# Scripts in package.json (Standalone/tsx):
+"scripts": {
+  "dev": "tsx watch src/index.ts",
+  "start": "tsx src/index.ts",
+  "build": "tsc",
+  "prod": "node dist/index.js",
+  "test": "jest",
+  "adk:web": "adk web",
+  "adk:run": "adk run src/agents/multi-tool/agent.ts"
+}
+```
+
+### Nx Generator Output (Vite-based)
+
+```
+my-agent/
+├── .env.example              # Environment template (committed)
+├── .env                      # User's actual keys (gitignored)
+├── .gitignore               # Includes .env, .env.local, .env*.local
+├── package.json             # Dependencies and vite-node scripts
+├── tsconfig.json            # TypeScript config (verbatimModuleSyntax: false)
+├── vite.config.ts           # Vite configuration for Node.js
+├── jest.config.ts           # Jest configuration (Nx integration)
+├── README.md                # Dynamic based on selected templates
+├── src/
+│   ├── index.ts             # Main entry point with API key validation
+│   └── agents/              # Agent implementations
+│       ├── basic/           # If "Basic Agent" selected
+│       │   └── agent.ts
+│       └── multi-tool/      # If "Multi-tool" selected (default)
+│           └── agent.ts
+└── tests/
+    └── agents.test.ts
+
+# Scripts in package.json (Nx/Vite):
+"scripts": {
+  "dev": "vite-node --watch src/index.ts",
+  "start": "vite-node src/index.ts",
+  "build": "vite build",
+  "prod": "node dist/index.js",
+  "test": "jest",
+  "adk:web": "adk web",
+  "adk:run": "adk run src/agents/multi-tool/agent.ts"
+}
 ```
 
 ## 📄 Configuration Files
 
-### package.json
+### package.json (Standalone/tsx mode)
 
 ```json
 {
@@ -169,6 +237,78 @@ my-agent/
     "typescript": "^5.9.3"
   }
 }
+```
+
+### package.json (Nx/Vite mode)
+
+```json
+{
+  "name": "my-agent",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "dist/index.js",
+  "scripts": {
+    "dev": "vite-node --watch src/index.ts",
+    "dev:agent": "vite-node --watch src/agents/multi-tool/agent.ts",
+    "start": "vite-node src/index.ts",
+    "build": "vite build",
+    "prod": "node dist/index.js",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "lint": "eslint src/**/*.ts",
+    "format": "prettier --write src/**/*.ts",
+    "adk:web": "adk web",
+    "adk:run": "adk run src/agents/multi-tool/agent.ts"
+  },
+  "dependencies": {
+    "@google/adk": "^0.2.0",
+    "@google/adk-devtools": "^0.2.0",
+    "dotenv": "^16.4.0",
+    "zod": "^3.23.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.0",
+    "@typescript-eslint/eslint-plugin": "^7.0.0",
+    "@typescript-eslint/parser": "^7.0.0",
+    "eslint": "^8.56.0",
+    "jest": "^29.7.0",
+    "prettier": "^3.2.0",
+    "ts-jest": "^29.1.0",
+    "typescript": "^5.9.3",
+    "vite": "^6.0.0",
+    "vite-node": "^2.1.0",
+    "vite-plugin-node": "^3.1.0"
+  }
+}
+```
+
+### vite.config.ts (Nx mode only)
+
+```typescript
+import { defineConfig } from 'vite';
+import { VitePluginNode } from 'vite-plugin-node';
+
+export default defineConfig({
+  plugins: [
+    ...VitePluginNode({
+      adapter: 'node',
+      appPath: './src/index.ts',
+      exportName: 'rootAgent',
+      tsCompiler: 'esbuild',
+    }),
+  ],
+  build: {
+    outDir: 'dist',
+    lib: {
+      entry: './src/index.ts',
+      formats: ['es'],
+      fileName: 'index',
+    },
+    rollupOptions: {
+      external: ['@google/adk', '@google/adk-devtools', 'zod', 'dotenv'],
+    },
+  },
+});
 ```
 
 ### tsconfig.json (per ADK docs)
